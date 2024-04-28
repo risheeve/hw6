@@ -20,6 +20,29 @@ struct MyStringHash {
     HASH_INDEX_T operator()(const std::string& k) const
     {
         // Add your code here
+        HASH_INDEX_T w[5] = {0};
+        int segLen = 6;
+        int n = k.length();
+        int segs = (n + segLen - 1) / segLen;
+        for (int i = 0; i < segs; ++i) {
+                        HASH_INDEX_T pow_36 = 1;
+                        int segEnd = n - i * segLen;
+                        int segStart = std::max(0, segEnd - segLen);
+
+                        for (int pos = segEnd - 1; pos >= segStart; --pos) {
+                            char c = std::tolower(k[pos]);
+                            HASH_INDEX_T val = letterDigitToNumber(c);
+                            int indx = 4 - i; 
+                            w[indx] += val * pow_36;
+                            pow_36 *= 36;
+                        }
+                    }
+                    HASH_INDEX_T hash_val = 0;
+                    for (int i = 0; i < 5; ++i) {
+                        hash_val += rValues[i] * w[i];
+                    }
+
+                    return hash_val;
 
 
     }
@@ -28,7 +51,14 @@ struct MyStringHash {
     HASH_INDEX_T letterDigitToNumber(char letter) const
     {
         // Add code here or delete this helper function if you do not want it
-
+        letter = std::tolower(letter);
+        if(std::isalpha(letter)) {
+            return letter - 'a';
+        } else if(std::isdigit(letter)) {
+            return letter - '0' + 26;
+        } else {
+            return 0;
+        }
     }
 
     // Code to generate the random R values
